@@ -5,7 +5,7 @@ const router = express.Router();
 const Books = require("../models").Books;
 const Loans = require("../models").Loans;
 const Patrons = require("../models").Patrons;
-var moment = require('moment');
+// var moment = require('moment');
 
 /* GET All books page. */
   router.get('/', function(req, res, next) {

@@ -1,3 +1,6 @@
+const moment = require('moment');
+
+
 "use strict";
 
 const express = require("express");
@@ -81,15 +84,15 @@ module.exports = router;
 
 // // Get return book form and details via loan id
 // router.get('/return/:id', function(req, res, next) {
-//   Loan.findById((req.params.id), {
+//   Loans.findById((req.params.id), {
 //     include: [{ all: true }],
 //   })
-//   .then(function(loandetails){
-//     if (loandetails) {
-//       loandetails.returned_on = moment().format('YYYY-MM-DD');
-//       res.render('partials/returnbook', {
+//   .then(function(loanData){
+//     if (loanData) {
+//       loanData.returned_on = new Date();
+//       res.render('returnbook', {
 //         title: 'Return Book',
-//         loan: loandetails
+//         loan: loanData
 //       });
 //     } else {
 //       err.status == 404;
@@ -113,16 +116,16 @@ module.exports = router;
 //       Loan.findById((req.params.id), {
 //         include: [{ all: true }],
 //       })
-//       .then(function(loandetails){
+//       .then(function(loanData){
 //         // loop over err messages
 //         var errMessages = [];
 //         for (var i=0; i<err.errors.length; i++) {
 //           errMessages[i] = err.errors[i].message;
 //         }
-//         loandetails.returned_on = moment().format('YYYY-MM-DD');
+//         loanData.returned_on = moment().format('YYYY-MM-DD');
 //         res.render('partials/returnbook', {
 //           title: 'Return Book',
-//           loan: loandetails,
+//           loan: loanData,
 //           errors: errMessages
 //         });
 //       });
@@ -134,38 +137,39 @@ module.exports = router;
 //   }); // ends catch
 // });
 
-// // GET new loan form
-// router.get('/new', function(req, res, next) {
-//   var bookdetails;
-//   var patrondetails;
+// GET new loan form
+//I had trouble advancing newDate() +7 days.  Researched and installed 'moment' package for ease
+router.get('/new', function(req, res, next) {
+  var bookdetails;
+  var patrondetails;
 
-//   Book.findAll({
-//     attributes: ['id', 'title'],
-//     order: 'title',
-//     // include: [{ model: Loan }]
-//   }).then(function(results){
-//     console.log(results);
-//     // don't let same book be borrowed more than once
-//     bookdetails = results;
-//   }).then(
-//     Patron.findAll({
-//       attributes: ['id', 'first_name', 'last_name'],
-//       order: 'last_name'
-//     }).then(function(results){
-//       patrondetails = results;
-//     }).then(function(){
-//       res.render('partials/newloan', {
-//         title: 'Create New Loan',
-//         books: bookdetails,
-//         patrons: patrondetails,
-//         loaned_on: moment().format('YYYY-MM-DD'),
-//         return_by: moment().add(7, 'days').format('YYYY-MM-DD')
-//       });
-//     }).catch(function(err){
-//       return next(err);
-//     })
-//   );
-// });
+  Books.findAll({
+    attributes: ['id', 'title'],
+    order: 'title',
+    // include: [{ model: Loan }]
+  }).then(function(results){
+    console.log(results);
+    // don't let same book be borrowed more than once
+    bookdetails = results;
+  }).then(
+    Patrons.findAll({
+      attributes: ['id', 'first_name', 'last_name'],
+      order: 'last_name'
+    }).then(function(results){
+      patrondetails = results;
+    }).then(function(){
+      res.render('newloan', {
+        title: 'Create New Loan',
+        books: bookdetails,
+        patrons: patrondetails,
+        loaned_on: moment().format('YYYY-MM-DD'),
+        return_by: moment().add(7, 'days').format('YYYY-MM-DD')
+      });
+    }).catch(function(err){
+      return next(err);
+    })
+  );
+});
 
 // // POST new loan form
 // router.post('/new', function(req, res, next) {

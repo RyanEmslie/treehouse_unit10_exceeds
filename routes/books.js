@@ -64,17 +64,15 @@ const Patrons = require("../models").Patrons;
     });
   });
   
-  module.exports = router;
   
-  // // GET new book form
-  // router.get('/new', function(req, res, next) {
-  //   res.render('partials/newbook', {
-  //     title: 'Create New Book'
-  //   });
-  //   if (err) return next(err);
-  // });
-  
-  
+  // GET new book form
+  router.get('/new', function(req, res, next) {
+    res.render('newbook', {
+      title: 'Create New Book'
+    });
+    if (err) return next(err);
+  });
+    
   // // POST new book
   // router.post('/new', function(req, res, next) {
   //   Book.create(req.body)
@@ -106,34 +104,34 @@ const Patrons = require("../models").Patrons;
   // }); // ends post
   
   
+  // GET book details
+  router.get('/:id', function(req, res, next) {
+    Books.findAll({
+      include: [{ model: Loans, include: [{ model: Patrons }] }],
+      where: { id: req.params.id }
+    })
+    .then(function(loanData){
   
+      // var loanData = JSON.parse(JSON.stringify(bookdetails));
   
-  // // GET book details
-  // router.get('/:id', function(req, res, next) {
-  //   Book.findAll({
-  //     include: [{ model: Loan, include: [{ model: Patron }] }],
-  //     where: { id: req.params.id }
-  //   })
-  //   .then(function(bookdetails){
+      if (loanData) {
+        res.render('bookdetail', {
+          title: 'Book Details',
+          book: loanData[0],
+          loans: loanData[0].Loans
+        });
+      } else {
+        err.status == 404;
+        return next(err);
+      }
   
-  //     var loansdata = JSON.parse(JSON.stringify(bookdetails));
+    }).catch(function(err){
+      return next(err);
+    });
+  });
   
-  //     if (bookdetails) {
-  //       res.render('partials/bookdetail', {
-  //         title: 'Book Details',
-  //         book: loansdata[0],
-  //         loans: loansdata[0].Loans
-  //       });
-  //     } else {
-  //       err.status == 404;
-  //       return next(err);
-  //     }
-  
-  //   }).catch(function(err){
-  //     return next(err);
-  //   });
-  // });
-  
+  module.exports = router;
+
   
   // // PUT or update book details form
   // router.put('/:id', function(req, res, next) {
@@ -151,7 +149,7 @@ const Patrons = require("../models").Patrons;
   //       })
   //       .then(function(bookdetails){
   
-  //         var loansdata = JSON.parse(JSON.stringify(bookdetails));
+  //         var loanData = JSON.parse(JSON.stringify(bookdetails));
   //         // loop over err messages
   //         var errMessages = [];
   //         for (var i=0; i<err.errors.length; i++) {
@@ -161,8 +159,8 @@ const Patrons = require("../models").Patrons;
   //         if (bookdetails) {
   //           res.render('partials/bookdetail', {
   //             title: 'Book Details',
-  //             book: loansdata[0],
-  //             loans: loansdata[0].Loans,
+  //             book: loanData[0],
+  //             loans: loanData[0].Loans,
   //             errors: errMessages
   //           });
   //         } else {

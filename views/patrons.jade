@@ -14,7 +14,7 @@ block content
         th Library
         th Zip
       tbody
-        //- each patron in patrons
+        each patron in patrons
           tr
             td
               a(href='/patrons/' + patron.id) #{patron.first_name} #{patron.last_name}

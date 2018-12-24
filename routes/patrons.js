@@ -7,9 +7,19 @@ const Loans = require("../models").Loans;
 const Patrons = require("../models").Patrons;
 
 
+
 router.get('/', function(req, res, next) {
-    res.render('patrons');
-  });
+    
+  Patrons.findAll({
+    order: [["last_name", "ASC"]]
+  })
+  .then(function(patrons) {
+    res.render('patrons', {patrons : patrons});
+  }).catch(function(err) {
+      res.sendStatus(500);
+    });
+
+});
 
 module.exports = router;
 

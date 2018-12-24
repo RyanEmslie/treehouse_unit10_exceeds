@@ -5,77 +5,66 @@ const router = express.Router();
 const Books = require("../models").Books;
 const Loans = require("../models").Loans;
 const Patrons = require("../models").Patrons;
+var moment = require('moment');
 
+/* GET All books page. */
+  router.get('/', function(req, res, next) {
+    Books.findAll({
+      order: [["author", "ASC"]]
+    })
+    .then(function(bookData) {
+      res.render('books', {books : bookData});
+		}).catch(function(err) {
+    		res.sendStatus(500);
+  		});
+  });
 
-/* GET books page. */
-router.get('/', function(req, res, next) {
-  res.render('books', { title: 'Express' });
-});
-
-
-module.exports = router;
-
-
-// GET books page
-// 
-// router.get('/', function(req, res, next) {
-  //   Book.findAll({order: 'title'}).then(function(booklistings){
-  //     if(booklistings){
-  //       res.render('partials/books', {
-  //         title: 'Books',
-  //         books: booklistings
-  //       });
-  //     } else {
-  //       err.status == 404;
-  //       return next (err);
-  //     }
-  //   }).catch(function(err){
-  //     return next(err);
-  //   });
-  // });
   
-  // // GET overdue books
-  // router.get('/overdue', function(req, res, next) {
-  //   Loan.findAll({
-  //     include: [{ model: Book }],
-  //     where: { return_by: { $lt: new Date() }, returned_on: null },
-  //     order: 'title'
-  //   }).then(function(booklistings){
-  //     if(booklistings){
-  //       res.render('partials/overduebooks', {
-  //         title: 'Overdue Books',
-  //         loans: booklistings
-  //       });
-  //     } else {
-  //       err.status == 404;
-  //       return next(err);
-  //     }
-  //   }).catch(function(err){
-  //     return next(err);
-  //   });
-  // });
+  // GET overdue books
+  //Filter books by retured_on null and (todays date - return_by)
+  router.get('/overdue', function(req, res, next) {
+    Loans.findAll({
+        include: [{ model: Books }],
+        where: { returned_on: null, return_by: {$lt: new Date()} }
+      })
+      .then(function(bookData){
+      if(bookData){
+          res.render('overduebooks', {
+              title: 'Overdue Books',
+          loans: bookData
+        });
+      } else {
+          err.status == 404;
+          return next(err);
+        }
+      }).catch(function(err){
+      return next(err);
+    });
+  });
+
   
-  // // GET checked-out books
-  // router.get('/checked_out', function(req, res, next) {
-  //   Loan.findAll({
-  //     include: [{ model: Book }],
-  //     where: { returned_on: null },
-  //     order: 'title'
-  //   }).then(function(booklistings){
-  //     if(booklistings){
-  //       res.render('partials/checkedoutbooks', {
-  //         title: 'Checked-Out Books',
-  //         loans: booklistings
-  //       });
-  //     } else {
-  //       err.status == 404;
-  //       return next(err);
-  //     }
-  //   }).catch(function(err){
-  //     return next(err);
-  //   });
-  // });
+  // GET checked-out books
+  router.get('/checked_out', function(req, res, next) {
+    Loans.findAll({
+      include: [{ model: Books }],
+      where: { returned_on: null },
+      order: 'title'
+    }).then(function(bookData){
+      if(bookData){
+        res.render('checkedoutbooks', {
+          title: 'Checked-Out Books',
+          loans: bookData
+        });
+      } else {
+        err.status == 404;
+        return next(err);
+      }
+    }).catch(function(err){
+      return next(err);
+    });
+  });
   
+  module.exports = router;
   
   // // GET new book form
   // router.get('/new', function(req, res, next) {

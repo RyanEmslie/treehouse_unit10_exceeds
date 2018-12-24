@@ -1,89 +1,83 @@
-'use strict';
+"use strict";
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const moment = require('moment');
+const moment = require("moment");
 const Books = require("../models").Books;
 const Loans = require("../models").Loans;
 const Patrons = require("../models").Patrons;
 
+// GET loans page
+router.get("/", function(req, res, next) {
+  Loans.findAll({
+    include: [{ all: true }],
+    order: "book_id"
+  })
+    .then(function(loanData) {
+      if (loanData) {
+        res.render("loans", {
+          title: "Loans",
+          loans: loanData
+        });
+      } else {
+        err.status == 404;
+        return next(err);
+      }
+    })
+    .catch(function(err) {
+      return next(err);
+    });
+}); // ends get
 
-router.get('/', function(req, res, next) {
-    res.render('loans');
-  });
 
+
+// GET overdue loans
+router.get("/overdue", function(req, res, next) {
+  Loans.findAll({
+    include: [{ all: true }],
+    where: { return_by: { $lt: new Date() }, returned_on: null }
+  })
+    .then(function(loanData) {
+      if (loanData) {
+        res.render("overdueloans", {
+          title: "Overdue Loans",
+          loans: loanData
+        });
+      } else {
+        err.status == 404;
+        return next(err);
+      }
+    })
+    .catch(function(err) {
+      return next(err);
+    });
+}); // ends get
+
+
+
+// GET checked-out loans
+router.get("/checked_out", function(req, res, next) {
+  Loans.findAll({
+    include: [{ all: true }],
+    where: { returned_on: null }
+  })
+    .then(function(loanData) {
+      if (loanData) {
+        res.render("checkedoutloans", {
+          title: "Checked-Out Loans",
+          loans: loanData
+        });
+      } else {
+        err.status == 404;
+        return next(err);
+      }
+    })
+    .catch(function(err) {
+      return next(err);
+    });
+});
 
 module.exports = router;
-
-
-// GET loans page
-// router.get('/', function(req, res, next) {
-//   Loan.findAll({
-//     include: [{ all: true }],
-//     order: 'Book.title'
-//   }).then(function(loanlistings){
-
-//     if (loanlistings) {
-//       res.render('partials/loans', {
-//         title: 'Loans',
-//         loans: loanlistings
-//       });
-//     } else {
-//       err.status == 404;
-//       return next(err);
-//     }
-
-//   }).catch(function(err){
-//     return next(err);
-//   });
-// }); // ends get
-
-
-
-// // GET overdue loans
-// router.get('/overdue', function(req, res, next) {
-//   Loan.findAll({
-//     include: [{ all: true }],
-// 		where: { return_by: { $lt: moment().format('YYYY-MM-DD').toString() }, returned_on: null }
-//   }).then(function(loanlistings){
-//     var loansdata = JSON.parse(JSON.stringify(loanlistings));
-
-//     if (loanlistings) {
-//       res.render('partials/overdueloans', {
-//         title: 'Overdue Loans',
-//         loans: loansdata
-//       });
-//     } else {
-//       err.status == 404;
-//       return next(err);
-//     }
-
-//   }).catch(function(err) {
-//     return next(err);
-//   });
-// }); // ends get
-
-// // GET checked-out loans
-// router.get('/checked_out', function(req, res, next) {
-//   Loan.findAll({
-//     include: [{ all: true }],
-//   	where: { returned_on: null }
-//   }).then(function(loanlistings){
-//     if (loanlistings) {
-//       res.render('partials/checkedoutloans', {
-//         title: 'Checked-Out Loans',
-//         loans: loanlistings
-//       });
-//     } else {
-//       err.status == 404;
-//       return next(err);
-//     }
-//   }).catch(function(err) {
-//     return next(err);
-//   });
-// });
-
-
 
 // // Get return book form and details via loan id
 // router.get('/return/:id', function(req, res, next) {
@@ -105,7 +99,6 @@ module.exports = router;
 //     return next(err);
 //   });
 // });
-
 
 // // PUT or update return book using loan id
 // router.put('/return/:id', function(req, res, next) {
@@ -140,7 +133,6 @@ module.exports = router;
 
 //   }); // ends catch
 // });
-
 
 // // GET new loan form
 // router.get('/new', function(req, res, next) {

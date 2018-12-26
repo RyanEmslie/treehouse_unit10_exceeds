@@ -40,6 +40,8 @@
       classMethods: {
         associate: function(models) {
           books.hasMany(models.Loans, {foreignKey: 'book_id'});
+          // books.hasMany(models.Patrons, {foreignKey: 'patron_id'});
+          
         }
       },
       timestamps: false

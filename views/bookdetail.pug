@@ -18,7 +18,7 @@ block content
     p
       input(type='submit' value='Update')
   if errors
-    include ./error
+    include error
   h2 Loan History
   p
   table
@@ -42,4 +42,4 @@ block content
           td #{loan.returned_on}
           td
             if (loan.returned_on === null)
-              a.button(href='loans/return/' + loan.id) Return Book
+              a.button(href='/loans/return/' + loan.id) Return Book

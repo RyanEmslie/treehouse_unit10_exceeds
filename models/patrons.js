@@ -18,6 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Patrons.hasMany(models.Loans, {foreignKey: 'patron_id'});
+        
       }
     },
     timestamps: false

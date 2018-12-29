@@ -19,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       validate: {
         isDate: {
-          msg: "Please enter a loaned-on date"
+          msg: "Please enter a valid loaned-on date"
         }
       }
     },
@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       validate: {
         isDate: {
-          msg: "Please enter a return-by date"
+          msg: "Please enter a valid return-by date"
         }
       }
     },
@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       validate: {
         isDate: {
-          msg: "Please enter a returned-on date"
+          msg: "Please enter a valid returned-on date"
         }
       }
     }

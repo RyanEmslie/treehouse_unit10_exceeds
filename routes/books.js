@@ -1,176 +1,158 @@
-'use strict';
+"use strict";
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const Books = require("../models").Books;
 const Loans = require("../models").Loans;
 const Patrons = require("../models").Patrons;
-// var moment = require('moment');
 
-/* GET All books page. */
-  router.get('/', function(req, res, next) {
-    Books.findAll({
-      order: [["author", "ASC"]]
-    })
+
+// -***********************
+// GET All books page.
+// -***********************
+router.get("/", function(req, res, next) {
+  Books.findAll({
+    order: [["author", "ASC"]]
+  })
     .then(function(bookData) {
-      res.render('books', {books : bookData});
-		}).catch(function(err) {
-    		res.sendStatus(500);
-  		});
-  });
-
-  
-  // GET overdue books
-  //Filter books by retured_on null and (todays date - return_by)
-  router.get('/overdue', function(req, res, next) {
-    Loans.findAll({
-        include: [{ model: Books }],
-        where: { returned_on: null, return_by: {$lt: new Date()} }
-      })
-      .then(function(bookData){
-      if(bookData){
-          res.render('overduebooks', {
-              title: 'Overdue Books',
-          loans: bookData
-        });
-      } else {
-          err.status == 404;
-          return next(err);
-        }
-      }).catch(function(err){
-      return next(err);
-    });
-  });
-
-  
-  // GET checked-out books
-  router.get('/checked_out', function(req, res, next) {
-    Loans.findAll({
-      include: [{ model: Books }],
-      where: { returned_on: null },
-      order: 'title'
-    }).then(function(bookData){
-      if(bookData){
-        res.render('checkedoutbooks', {
-          title: 'Checked-Out Books',
-          loans: bookData
-        });
-      } else {
-        err.status == 404;
-        return next(err);
-      }
-    }).catch(function(err){
-      return next(err);
-    });
-  });
-  
-  
-  // GET new book form
-  router.get('/new', function(req, res, next) {
-    res.render('newbook', {
-      title: 'Create New Book'
-    });
-    if (err) return next(err);
-  });
-    
-  // // POST new book
-  // router.post('/new', function(req, res, next) {
-  //   Book.create(req.body)
-  //   .then(function(book){
-  //     res.redirect('/books/');
-  //   }).catch(function(err){
-  //     if (err.name == 'SequelizeValidationError') {
-  
-  //       // loop over err messages
-  //       var errMessages = [];
-  //       for (var i=0; i<err.errors.length; i++) {
-  //         errMessages[i] = err.errors[i].message;
-  //       }
-  
-  //       /* I want to keep existing fields from clearing out on submit (i.e., so that if there's a validation error the librarian doesn't have to re-enter all the data), so I have added logic in the newbook template to check which properties of req.body exist. I'm making req.body available to the template via the following object */
-  //       res.render('partials/newbook', {
-  //         title: 'Create New Book',
-  //         bookTitle: req.body.title,
-  //         bookAuthor: req.body.author,
-  //         bookGenre: req.body.genre,
-  //         bookPublished: req.body.first_published,
-  //         errors: errMessages
-  //       });
-  
-  //     } else {
-  //       return next(err);
-  //     }
-  //   }); // ends catch
-  // }); // ends post
-  
-  
-  // GET book details
-  router.get('/:id', function(req, res, next) {
-    Books.findAll({
-      include: [{ model: Loans, include: [{ model: Patrons }] }],
-      where: { id: req.params.id }
+      res.render("books", { books: bookData });
     })
-    .then(function(loanData){
-  
-      // var loanData = JSON.parse(JSON.stringify(bookdetails));
-  
-      if (loanData) {
-        res.render('bookdetail', {
-          title: 'Book Details',
-          book: loanData[0],
-          loans: loanData[0].Loans
+    .catch(function(err) {
+      res.status(500);
+    });
+});
+
+// -***********************
+// GET overdue books
+//Filter books by retured_on null and (todays date - return_by)
+// -***********************
+router.get("/overdue", function(req, res, next) {
+  Loans.findAll({
+    include: [{ model: Books }],
+    where: { returned_on: null, return_by: { $lt: new Date() } }
+  })
+    .then(function(bookData) {
+      res.render("overduebooks", {
+        title: "Overdue Books",
+        loans: bookData
+      });
+    })
+    .catch(function(err) {
+      res.send(500);
+    });
+});
+
+// -***********************
+// GET checked-out books
+// -***********************
+router.get("/checked_out", function(req, res, next) {
+  Loans.findAll({
+    include: [{ model: Books }],
+    where: { returned_on: null },
+    order: "title"
+  })
+    .then(function(bookData) {
+      res.render("checkedoutbooks", {
+        title: "Checked-Out Books",
+        loans: bookData
+      });
+    })
+    .catch(function(err) {
+      res.sendStatus(500);
+    });
+});
+
+// -***********************
+//     GET new book form
+// -***********************
+router.get("/new", function(req, res, next) {
+  res
+    .render("newbook", {
+      title: "Create New Book"
+    })
+    .catch(function(err) {
+      res.sendStatus(500);
+    });
+});
+
+// -***********************
+// POST - Create New Book
+// -***********************
+router.post("/new", function(req, res, next) {
+  Books.create(req.body)
+    .then(function(book) {
+      res.redirect("/books");
+    })
+    .catch(function(err) {
+      if (err.name === "SequelizeValidationError") {
+        res.render("newbook", {
+          book: Books.build(req.body),
+          errors: err.errors
         });
       } else {
-        err.status == 404;
-        return next(err);
+        throw err;
       }
-  
-    }).catch(function(err){
-      return next(err);
+    })
+    .catch(function(err) {
+      res.sendStatus(500);
     });
-  });
-  
-  module.exports = router;
+});
 
-  
-  // // PUT or update book details form
-  // router.put('/:id', function(req, res, next) {
-  //   Book.findById(req.params.id).then(function(book){
-  //     return book.update(req.body);
-  //   }).then(function(book){
-  //     res.redirect('/books/' + book.id);
-  //   }).catch(function(err){
-  //     // if validation error, re-render page with error messages
-  //     if (err.name === 'SequelizeValidationError') {
-  
-  //       Book.findAll({
-  //         include: [{ model: Loan, include: [{ model: Patron }] }],
-  //         where: { id: req.params.id }
-  //       })
-  //       .then(function(bookdetails){
-  
-  //         var loanData = JSON.parse(JSON.stringify(bookdetails));
-  //         // loop over err messages
-  //         var errMessages = [];
-  //         for (var i=0; i<err.errors.length; i++) {
-  //           errMessages[i] = err.errors[i].message;
-  //         }
-  
-  //         if (bookdetails) {
-  //           res.render('partials/bookdetail', {
-  //             title: 'Book Details',
-  //             book: loanData[0],
-  //             loans: loanData[0].Loans,
-  //             errors: errMessages
-  //           });
-  //         } else {
-  //           err.status == 404;
-  //           return next(err);
-  //         }
-  
-  //       }).catch(function(err){
-  //         return next(err);
-  //       });
-  //     } // ends if validation error
-  //   }); // ends first catch block
-  // }); // ends PUT
+// -***********************
+// GET book details
+// -***********************
+router.get("/:id", function(req, res, next) {
+  Books.findAll({
+    include: [{ model: Loans, include: [{ model: Patrons }] }],
+    where: { id: req.params.id }
+  })
+    .then(function(loanData) {
+      res.render("bookdetail", {
+        title: "Book Details",
+        book: loanData[0],
+        loans: loanData[0].Loans
+      });
+    })
+    .catch(function(err) {
+      res.status(500);
+    });
+});
+
+// -***********************
+// -Put Udate book ID
+// -***********************
+router.put("/:id", function(req, res, next) {
+  Books.findById(req.params.id)
+    .then(function(book) {
+      return book.update(req.body);
+    })
+    .then(function(book) {
+      res.redirect("/books/" + book.id);
+    })
+    .catch(function(err) {
+      if (err.name === "SequelizeValidationError") {
+        Books.findAll({
+          include: [{ model: Loans, include: [{ model: Patrons }] }],
+          where: { id: req.params.id }
+        })
+          .then(function(bookData) {
+            if (bookData) {
+              res.render("bookdetail", {
+                title: "Book Details",
+                book: bookData[0],
+                loans: bookData[0].Loans,
+                errors: err.errors
+              });
+            } else {
+              throw err
+            }
+          })
+          .catch(function(err) {
+            res.sendStatus(500);
+          });
+      } 
+    });
+});
+
+
+module.exports = router;

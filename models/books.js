@@ -12,14 +12,14 @@
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: {msg: "Title is required."}
+          notEmpty: {msg: "Please enter a valid title."}
         }
       },
       author: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notEmpty: {msg: "Author is required."}
+          notEmpty: {msg: "Please enter an author."}
         }
       },
       genre: {
@@ -40,8 +40,7 @@
       classMethods: {
         associate: function(models) {
           books.hasMany(models.Loans, {foreignKey: 'book_id'});
-          // books.hasMany(models.Patrons, {foreignKey: 'patron_id'});
-          
+ 
         }
       },
       timestamps: false

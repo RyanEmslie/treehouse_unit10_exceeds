@@ -23,7 +23,7 @@ router.get("/", function(req, res, next) {
       });
     })
     .catch(function(err) {
-      res.status(500);
+      return next(err);
     });
 });
 
@@ -42,7 +42,7 @@ router.get("/overdue", function(req, res, next) {
       });
     })
     .catch(function(err) {
-      res.status(500);
+      return next(err);
     });
 });
 
@@ -61,7 +61,7 @@ router.get("/checked_out", function(req, res, next) {
       });
     })
     .catch(function(err) {
-      res.status(500);
+      return next(err);
     });
 });
 
@@ -86,7 +86,7 @@ router.get("/new", function(req, res, next) {
         });
       })
       .catch(function(err) {
-        res.sendStatus(500);
+        return next(err);
       });
   });
 });
@@ -133,7 +133,7 @@ router.post("/new", function(req, res, next) {
       }
     })
     .catch(function(err) {
-      res.sendStatus(500);
+      return next(err);
     });
 }); // ends POST
 
@@ -152,7 +152,7 @@ router.get("/return/:id", function(req, res, next) {
         });
     })
     .catch(function(err) {
-      res.sendStatus(500);
+      return next(err);
     });
 });
 
@@ -184,7 +184,7 @@ router.put("/return/:id", function(req, res, next) {
       }
     }) // ends catch
     .catch(function(err) {
-      res.sendStatus(500);
+      return next(err);
     })
 });
 

@@ -17,7 +17,7 @@ router.get("/", function(req, res, next) {
       res.render("patrons", { patrons: patrons });
     })
     .catch(function(err) {
-      res.sendStatus(500);
+      return next(err);
     });
 });
 
@@ -25,9 +25,10 @@ router.get("/", function(req, res, next) {
 // GET new patron form
 // -**********************
 router.get("/new", function(req, res, next) {
-  res.render("newpatron", { patrons: Patrons.build() })
-  .catch(function(err) {
-    res.sendStatus(500);
+  res.render("newpatron", { patrons: Patrons.build() }).then(function(err) {
+    res.render("error", { error: err.errors }).catch(function(err) {
+      return next(err);
+    });
   });
 });
 
@@ -51,8 +52,8 @@ router.post("/new", function(req, res, next) {
     })
     .catch(function(err) {
       res.sendStatus(500);
-    })
-}); 
+    });
+});
 
 // -**********************
 // GET patron details from ID number
@@ -63,15 +64,15 @@ router.get("/:id", function(req, res, next) {
     where: { id: req.params.id }
   })
     .then(function(patronData) {
-        res.render("patrondetail", {
-          title: "Patron Details",
-          patron: patronData[0],
-          loans: patronData[0].Loans
-        });
+      res.render("patrondetail", {
+        title: "Patron Details",
+        patron: patronData[0],
+        loans: patronData[0].Loans
+      });
     })
     .catch(function(err) {
       res.sendStatus(500);
-    })
+    });
 });
 
 // -**********************
@@ -91,24 +92,23 @@ router.put("/:id", function(req, res, next) {
           include: [{ model: Loans, include: [{ model: Books }] }],
           // include: [{ model: Loans }],
           where: { id: req.params.id }
-        })
-          .then(function(patronData) {
-            if (patronData) {
-              res.render("patrondetail", {
-                title: "Patron Details",
-                patron: patronData[0],
-                loans: patronData[0].Loans,
-                errors: err.errors
-              });
-            } else {
-              throw err
-            }
-          })
+        }).then(function(patronData) {
+          if (patronData) {
+            res.render("patrondetail", {
+              title: "Patron Details",
+              patron: patronData[0],
+              loans: patronData[0].Loans,
+              errors: err.errors
+            });
+          } else {
+            throw err;
+          }
+        });
       }
     })
     .catch(function(err) {
       res.sendStatus(500);
-    })
+    });
 });
 
 module.exports = router;

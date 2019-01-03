@@ -71,7 +71,7 @@ router.get("/new", function(req, res, next) {
       title: "Create New Book"
     })
     .catch(function(err) {
-      res.sendStatus(500);
+      return next(err);
     });
 });
 
@@ -94,7 +94,7 @@ router.post("/new", function(req, res, next) {
       }
     })
     .catch(function(err) {
-      res.sendStatus(500);
+      return next(err);
     });
 });
 

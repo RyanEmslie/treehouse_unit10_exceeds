@@ -1,65 +1,29 @@
 extends layout
-  
+
 block content
   if errors
     include error
   h1 New Patron
   form(method='post')
-    - if (patronFirstName) {
-      p
-        label(for='first_name') First Name
-        input#first_name(type='text' name='first_name' value='#{patron.first_name}')
-    - } else {
-      p
-        label(for='first_name') First Name
-        input#first_name(type='text' name='first_name')
-    - }
-    - if (patronLastName) {
-      p
-        label(for='last_name') Last Name
-        input#last_name(type='text' name='last_name' value='#{patron.last_name}')
-    - } else {
-      p
-        label(for='last_name') Last Name
-        input#last_name(type='text' name='last_name')
-    - }
-    - if (patronAddress) {
-      p
-        label(for='address') Address
-        input#address(type='text' name='address' value='#{patron.address}')
-    - } else {
-      p
-        label(for='address') Address
-        input#address(type='text' name='address')
-    - }
-    - if (patronEmail) {
-      p
-        label(for='email') Email
-        input#email(type='text' name='email' value='#{patron.email}')
-    - } else {
-      p
-        label(for='email') Email
-        input#email(type='text' name='email')
-    - }
-    - if (patronLibraryId) {
-      p
-        label(for='library_id') Library ID
-        input#library_id(type='text' name='library_id' value='#{patron.library_id}')
-    - } else {
-      p
-        label(for='library_id') Library ID
-        input#library_id(type='text' name='library_id')
-    - }
-    - if (patronZipCode) {
-      p
-        label(for='zip_code') Zip Code
-        input#zip_code(type='text' name='zip_code' value='#{patron.zip_code}')
-    - } else {
-      p
-        label(for='zip_code') Zip Code
-        input#zip_code(type='text' name='zip_code')
-    - }
+
+    p
+      label(for='first_name') First Name
+      input#first_name(type='text' name='first_name')
+    p
+      label(for='last_name') Last Name
+      input#last_name(type='text' name='last_name')
+    p
+      label(for='address') Address
+      input#address(type='text' name='address')
+    p
+      label(for='email') Email
+      input#email(type='text' name='email')
+    p
+      label(for='library_id') Library ID
+      input#library_id(type='text' name='library_id')
+    p
+      label(for='zip_code') Zip Code
+      input#zip_code(type='text' name='zip_code')
     p
       input(type='submit' value='Create New Patron')
-
-
+    
